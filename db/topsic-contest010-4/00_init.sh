@@ -90,22 +90,207 @@ SELECT
     '2022-04-12 00:05:00' AS EX_TIMESTAMP
 FROM PERMUTATIONS WHERE FLAG & 16 > 0;
 SQL
-echo '01_response.sql'
-sqlite3 test.db '.read 01_response.sql'
-echo '02_solution.sql'
-sqlite3 test.db '.read 02_solution.sql'
+echo $'\n.read 01_response.sql' | tee -a /dev/stderr | sqlite3 test.db
+echo $'\n.read 02_solution.sql' | tee -a /dev/stderr | sqlite3 test.db
+for attempt in $(seq -w 1 10)
+do
+    echo $'\n'$attempt
+    echo $'\nDELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1' | tee -a /dev/stderr | sqlite3 test.db
+    echo $'\n.read 01_response.sql' | tee -a /dev/stderr | sqlite3 test.db
+    echo $'\n.read 02_solution.sql' | tee -a /dev/stderr | sqlite3 test.db
+done
 rm test.db
 
-# topsic-contest010-4/00_init.sh
-# 01_response.sql
+# .read 01_response.sql
 # STEP1|744
 # STEP2|156
 # STEP3|32
 # STEP4|6
 # STEP5|1
-# 02_solution.sql
+
+# .read 02_solution.sql
 # STEP1|744
 # STEP2|156
 # STEP3|32
 # STEP4|6
 # STEP5|1
+
+# 01
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|734
+# STEP2|155
+# STEP3|32
+# STEP4|3
+# STEP5|1
+
+# .read 02_solution.sql
+# STEP1|734
+# STEP2|155
+# STEP3|32
+# STEP4|3
+# STEP5|1
+
+# 02
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|721
+# STEP2|144
+# STEP3|25
+# STEP4|2
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|721
+# STEP2|144
+# STEP3|25
+# STEP4|2
+# STEP5|0
+
+# 03
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|688
+# STEP2|127
+# STEP3|21
+# STEP4|1
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|688
+# STEP2|127
+# STEP3|21
+# STEP4|1
+# STEP5|0
+
+# 04
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|645
+# STEP2|104
+# STEP3|16
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|645
+# STEP2|104
+# STEP3|16
+# STEP4|0
+# STEP5|0
+
+# 05
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|633
+# STEP2|94
+# STEP3|8
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|633
+# STEP2|94
+# STEP3|8
+# STEP4|0
+# STEP5|0
+
+# 06
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|611
+# STEP2|78
+# STEP3|8
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|611
+# STEP2|78
+# STEP3|8
+# STEP4|0
+# STEP5|0
+
+# 07
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|579
+# STEP2|68
+# STEP3|4
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|579
+# STEP2|68
+# STEP3|4
+# STEP4|0
+# STEP5|0
+
+# 08
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|544
+# STEP2|55
+# STEP3|1
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|544
+# STEP2|55
+# STEP3|1
+# STEP4|0
+# STEP5|0
+
+# 09
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|505
+# STEP2|51
+# STEP3|1
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|505
+# STEP2|51
+# STEP3|1
+# STEP4|0
+# STEP5|0
+
+# 10
+
+# DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1
+
+# .read 01_response.sql
+# STEP1|477
+# STEP2|41
+# STEP3|1
+# STEP4|0
+# STEP5|0
+
+# .read 02_solution.sql
+# STEP1|477
+# STEP2|41
+# STEP3|1
+# STEP4|0
+# STEP5|0
