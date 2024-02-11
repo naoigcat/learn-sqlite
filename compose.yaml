@@ -1,0 +1,26 @@
+services:
+  app:
+    build:
+      dockerfile_inline: |-
+        FROM debian:bookworm-slim
+        RUN apt-get update && \
+            apt-get -y --no-install-recommends install sqlite3=3.40.1-2 && \
+            rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+            mkdir -p /root/db && \
+            echo '#!/bin/bash\n\
+            set -e\n\
+            for dir in $$@\n\
+            do\n\
+              if test -d $$dir\n\
+              then\n\
+                bash -c "$$dir/00_init.sh"\n\
+              fi\n\
+            done\n\
+            ' | sed -e 's/^    //' > /root/entrypoint.sh && \
+            chmod 755 /root/entrypoint.sh
+        WORKDIR /root/db
+        ENTRYPOINT ["/root/entrypoint.sh"]
+    environment:
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./db:/root/db
