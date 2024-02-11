@@ -1,0 +1,34 @@
+-- https://topsic-contest.jp/contests/contest010/submissions/22996
+WITH PROCESS1 AS (
+    SELECT
+        SESSION_ID,
+        PROCESS_ID,
+        RANK() OVER (
+            PARTITION BY SESSION_ID
+            ORDER BY COALESCE(EX_TIMESTAMP, '2000-01-01 00:00:00') ASC
+        ) AS TIME_ID
+    FROM
+        PROCESS_LOG
+), PROCESS2 AS (
+    SELECT
+        PROCESS1.*,
+        RANK() OVER (
+            PARTITION BY SESSION_ID
+            ORDER BY PROCESS_ID ASC
+        ) AS STEP_ID
+    FROM
+        PROCESS1
+    WHERE
+        PROCESS1.PROCESS_ID = 'STEP' || TIME_ID
+)
+SELECT
+    PROCESS_ID AS PROCESS,
+    COUNT(*) AS CNT
+FROM
+    PROCESS2
+WHERE
+    PROCESS2.TIME_ID = PROCESS2.STEP_ID
+GROUP BY
+    PROCESS2.PROCESS_ID
+ORDER BY
+    PROCESS2.PROCESS_ID
