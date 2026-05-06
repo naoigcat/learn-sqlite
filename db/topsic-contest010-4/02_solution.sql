@@ -16,7 +16,7 @@ WITH SUB1 AS (
     FROM
         SUB1
     WHERE
-        CAST(SUBSTR(SUB1.PROCESS_ID, 5, 1) AS INT) != RANK
+        CAST(REPLACE(SUB1.PROCESS_ID, 'STEP', '') AS INT) != RANK
     GROUP BY
         SESSION_ID
 )
@@ -26,7 +26,7 @@ SELECT
     -- このとき、MIN が NULL の場合は存在する STEP を全て数え上げる
     , COUNT(
         DISTINCT CASE
-            WHEN CAST(SUBSTR(SUB1.PROCESS_ID, 5, 1) AS INT) < SUB2.MIN
+            WHEN CAST(REPLACE(SUB1.PROCESS_ID, 'STEP', '') AS INT) < SUB2.MIN
             OR SUB2.MIN IS NULL
                 THEN SUB1.SESSION_ID
             END
