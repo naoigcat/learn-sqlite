@@ -32,7 +32,7 @@ FROM
     PROCESS
 LEFT JOIN (
     SELECT
-        PROCESS_NO,
+        MAX(PROCESS_NO) AS PROCESS_NO,
         COUNT(*) AS CNT
     FROM
         PROCESS_LOG2
