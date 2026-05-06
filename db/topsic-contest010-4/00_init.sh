@@ -5,6 +5,8 @@ cd "$(dirname "$0")"
 rm -f test.db
 trap 'rm -f test.db' EXIT
 sqlite3 test.db >/dev/null <<SQL
+PRAGMA journal_mode = MEMORY;
+PRAGMA synchronous = OFF;
 CREATE TABLE PROCESS_IDS (
     PROCESS_ID VARCHAR NOT NULL,
     PRIMARY KEY (PROCESS_ID)
