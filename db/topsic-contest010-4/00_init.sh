@@ -3,7 +3,23 @@ set -euo pipefail
 echo "$0"
 cd "$(dirname "$0")"
 rm -f test.db
-trap 'rm -f test.db' EXIT
+_tmp_out1=$(mktemp)
+_tmp_out2=$(mktemp)
+trap 'rm -f test.db "${_tmp_out1:-}" "${_tmp_out2:-}"' EXIT
+
+run_reads() {
+    printf '\n%s\n' '.read 01_response.sql' >&2
+    sqlite3 test.db '.read 01_response.sql' | tee /dev/stderr >"$_tmp_out1"
+    printf '\n%s\n' '.read 02_solution.sql' >&2
+    sqlite3 test.db '.read 02_solution.sql' | tee /dev/stderr >"$_tmp_out2"
+    if ! cmp -s "$_tmp_out1" "$_tmp_out2"
+    then
+        echo 'error: 01_response.sql and 02_solution.sql outputs differ' >&2
+        diff -u "$_tmp_out1" "$_tmp_out2" >&2 || true
+        exit 1
+    fi
+}
+
 sqlite3 test.db >/dev/null <<SQL
 PRAGMA journal_mode = MEMORY;
 PRAGMA synchronous = OFF;
@@ -92,18 +108,13 @@ SELECT
     '2022-04-12 00:05:00' AS EX_TIMESTAMP
 FROM PERMUTATIONS WHERE FLAG & 16 > 0;
 SQL
-{
-    printf '\n%s\n' '.read 01_response.sql'
-    printf '\n%s\n' '.read 02_solution.sql'
-} | tee -a /dev/stderr | sqlite3 test.db
+run_reads
 for attempt in $(seq -w 1 10)
 do
-    printf '\n%s\n' "$attempt"
-    {
-        printf '\n%s\n' 'DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1;'
-        printf '\n%s\n' '.read 01_response.sql'
-        printf '\n%s\n' '.read 02_solution.sql'
-    } | tee -a /dev/stderr | sqlite3 test.db
+    printf '\n%s\n' "$attempt" >&2
+    printf '\n%s\n' 'DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1;' >&2
+    sqlite3 test.db 'DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1;'
+    run_reads
 done
 
 # .read 01_response.sql
