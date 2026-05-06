@@ -2,31 +2,44 @@ services:
   app:
     build:
       dockerfile_inline: |-
-        FROM debian:bookworm-slim
-        RUN apt-get update && \
-            apt-get -y --no-install-recommends install sqlite3=3.40.1-2 && \
-            rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+        FROM debian:bookworm-slim@sha256:f9c6a2fd2ddbc23e336b6257a5245e31f996953ef06cd13a59fa0a1df2d5c252
+
+        ENV DEBIAN_FRONTEND=noninteractive
+
+        RUN set -eux; \
+            apt-get update; \
+            apt-get -y --no-install-recommends install sqlite3=3.40.1-2+deb12u2; \
+            rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*; \
             mkdir -p /root/db && \
-            echo '#!/bin/bash\n\
-            set -euo pipefail\n\
-            for dir in "$${@}"\n\
-            do\n\
-              if ! test -d "$${dir}"\n\
-              then\n\
-                echo "directory not found: $${dir}" >&2\n\
-                exit 1\n\
-              fi\n\
-              script="$${dir}/00_init.sh"\n\
-              if ! test -f "$${script}"\n\
-              then\n\
-                echo "init script not found: $${script}" >&2\n\
-                exit 1\n\
-              fi\n\
-              bash "$${script}"\n\
-            done\n\
-            ' | sed -e 's/^    //' > /root/entrypoint.sh && \
+            printf '%s\n' \
+                '#!/bin/bash' \
+                'set -euo pipefail' \
+                '' \
+                'if [ "$$#" -eq 0 ]; then' \
+                '    echo "error: pass at least one exercise directory under /root/db (e.g. topsic-contest010-4)" >&2' \
+                '    exit 1' \
+                'fi' \
+                '' \
+                'for dir in "$$@"' \
+                'do' \
+                '    if ! test -d "$$dir"' \
+                '    then' \
+                '        echo "directory not found: $$dir" >&2' \
+                '        exit 1' \
+                '    fi' \
+                '    script="$$dir/00_init.sh"' \
+                '    if ! test -f "$$script"' \
+                '    then' \
+                '        echo "init script not found: $$script" >&2' \
+                '        exit 1' \
+                '    fi' \
+                '    bash "$$script"' \
+                'done' \
+                > /root/entrypoint.sh && \
             chmod 755 /root/entrypoint.sh
+
         WORKDIR /root/db
+
         ENTRYPOINT ["/root/entrypoint.sh"]
     environment:
       TZ: "Asia/Tokyo"
