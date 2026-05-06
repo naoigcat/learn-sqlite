@@ -92,14 +92,18 @@ SELECT
     '2022-04-12 00:05:00' AS EX_TIMESTAMP
 FROM PERMUTATIONS WHERE FLAG & 16 > 0;
 SQL
-echo $'\n.read 01_response.sql' | tee -a /dev/stderr | sqlite3 test.db
-echo $'\n.read 02_solution.sql' | tee -a /dev/stderr | sqlite3 test.db
+{
+    printf '\n%s\n' '.read 01_response.sql'
+    printf '\n%s\n' '.read 02_solution.sql'
+} | tee -a /dev/stderr | sqlite3 test.db
 for attempt in $(seq -w 1 10)
 do
-    echo $'\n'$attempt
-    echo $'\nDELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1' | tee -a /dev/stderr | sqlite3 test.db
-    echo $'\n.read 01_response.sql' | tee -a /dev/stderr | sqlite3 test.db
-    echo $'\n.read 02_solution.sql' | tee -a /dev/stderr | sqlite3 test.db
+    printf '\n%s\n' "$attempt"
+    {
+        printf '\n%s\n' 'DELETE FROM PROCESS_LOG WHERE ABS(RANDOM()) % 10 < 1;'
+        printf '\n%s\n' '.read 01_response.sql'
+        printf '\n%s\n' '.read 02_solution.sql'
+    } | tee -a /dev/stderr | sqlite3 test.db
 done
 
 # .read 01_response.sql
