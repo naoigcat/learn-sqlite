@@ -1,10 +1,10 @@
-echo $0
-cd $(dirname $0)
-if test -f test.db
-then
-    rm test.db
-fi
-sqlite3 test.db <<SQL
+set -euo pipefail
+
+echo "$0"
+cd "$(dirname "$0")"
+rm -f test.db
+trap 'rm -f test.db' EXIT
+sqlite3 test.db >/dev/null <<SQL
 CREATE TABLE PROCESS_IDS (
     PROCESS_ID VARCHAR NOT NULL,
     PRIMARY KEY (PROCESS_ID)
@@ -99,7 +99,6 @@ do
     echo $'\n.read 01_response.sql' | tee -a /dev/stderr | sqlite3 test.db
     echo $'\n.read 02_solution.sql' | tee -a /dev/stderr | sqlite3 test.db
 done
-rm test.db
 
 # .read 01_response.sql
 # STEP1|744
