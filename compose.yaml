@@ -8,13 +8,21 @@ services:
             rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
             mkdir -p /root/db && \
             echo '#!/bin/bash\n\
-            set -e\n\
-            for dir in $$@\n\
+            set -euo pipefail\n\
+            for dir in "$${@}"\n\
             do\n\
-              if test -d $$dir\n\
+              if ! test -d "$${dir}"\n\
               then\n\
-                bash -c "$$dir/00_init.sh"\n\
+                echo "directory not found: $${dir}" >&2\n\
+                exit 1\n\
               fi\n\
+              script="$${dir}/00_init.sh"\n\
+              if ! test -f "$${script}"\n\
+              then\n\
+                echo "init script not found: $${script}" >&2\n\
+                exit 1\n\
+              fi\n\
+              bash "$${script}"\n\
             done\n\
             ' | sed -e 's/^    //' > /root/entrypoint.sh && \
             chmod 755 /root/entrypoint.sh
