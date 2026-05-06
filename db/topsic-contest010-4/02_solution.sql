@@ -7,9 +7,6 @@ WITH SUB1 AS (
         , RANK() OVER (PARTITION BY SESSION_ID ORDER BY EX_TIMESTAMP) AS RANK
     FROM
         PROCESS_LOG
-    ORDER BY
-        SESSION_ID ASC
-        , EX_TIMESTAMP ASC
 )
 , SUB2 AS (
     -- STEP の番号 N とランク M が異なる MIN まではカウント対象
